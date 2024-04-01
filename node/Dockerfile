@@ -1,12 +1,14 @@
 FROM node:14
 
-WORKDIR /src/app
+# Instalando o Dockerize
+RUN apt-get update && apt-get install -y dockerize
+
+WORKDIR /usr/src/app
 
 COPY package*.json ./
 
 RUN npm install
-COPY ./src .
 
-EXPOSE 3000
+COPY . .
 
-CMD [ "node", "app.js" ]
+CMD ["dockerize", "-wait", "tcp://mysql:3306", "-timeout", "20s", "npm", "start"]
