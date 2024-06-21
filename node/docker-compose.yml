@@ -6,9 +6,9 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: mydatabase
-      MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL: 'true'  # Adicione esta linha
+      MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL: 'true'
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - ./mysql:/docker-entrypoint-initdb.d
 
@@ -17,12 +17,12 @@ services:
     environment:
       MYSQL_HOST: mysql
       MYSQL_USER: root
-      MYSQL_PASSWORD: nova_senha
+      MYSQL_PASSWORD: sua_senha
       MYSQL_DATABASE: mydatabase
     ports:
       - "3000:3000"
     volumes:
-      - ./src:/usr/src/app/src
+      - ./app/src:/usr/src/app/src
 
   nginx:
     image: nginx:latest

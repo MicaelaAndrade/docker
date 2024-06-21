@@ -3,13 +3,20 @@ const mysql = require('mysql');
 const app = express();
 
 const connection = mysql.createConnection({
-  host: process.env.MYSQL_HOST, 
+  host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE
 });
 
-connection.connect();
+connection.connect((err) => {
+  if (err) {
+    console.error('Erro ao conectar ao banco de dados:', err);
+    process.exit(1);
+  } else {
+    console.log('Conectado ao servidor MySQL.');
+  }
+});
 
 app.get('/', (req, res) => {
   connection.query('SELECT * FROM people', (error, results, fields) => {
@@ -26,5 +33,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+  console.log('Servidor está rodando na porta 3000');
 });

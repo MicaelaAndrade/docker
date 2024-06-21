@@ -2,14 +2,15 @@
   "name": "node",
   "version": "1.0.0",
   "description": "Docker node.js",
-  "main": "app.js",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js"
+
+    "start": " node node/app/src/app.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "express": "^4.17.1",
-    "mysql": "^2.18.1"
+    "express": "^4.19.2",
+    "mysql2": "^2.0.0"
   },
   "author": "Micaela Andrade",
   "license": "ISC"
