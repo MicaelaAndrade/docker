@@ -3,31 +3,41 @@ const mysql = require('mysql');
 const app = express();
 const port = 3000;
 
-const connection = mysql.createConnection({
-  host: 'db',
-  user: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE_NAME
+const config = {
+  host: 'db', // Nome do serviço do MySQL
+  user: 'root',
+  password: 'root',
+  database: 'nodedb'
+};
+
+const connection = mysql.createConnection(config);
+
+connection.connect(err => {
+  if (err) {
+    console.error('Error connecting to the database:', err.stack);
+    return;
+  }
+  console.log('Connected to the database.');
 });
 
-connection.connect();
-
-app.get('/teste', (req, res) => {
-  const sql = `INSERT INTO people(name) VALUES('John Doe')`;
-  connection.query(sql, (err, result) => {
+app.get('/', (req, res) => {
+  const sqlInsert = `INSERT INTO people(name) VALUES('John Doe')`;
+  connection.query(sqlInsert, err => {
     if (err) throw err;
-    connection.query('SELECT * FROM people', (err, results) => {
+
+    const sqlSelect = 'SELECT * FROM people';
+    connection.query(sqlSelect, (err, results) => {
       if (err) throw err;
-      let namesList = '<ul>';
-      results.forEach(row => {
-        namesList += `<li>${row.name}</li>`;
+      let names = '<ul>';
+      results.forEach(person => {
+        names += `<li>${person.name}</li>`;
       });
-      namesList += '</ul>';
-      res.send(`<h1>Full Cycle Rocks!</h1>${namesList}`);
+      names += '</ul>';
+      res.send(`<h1>Full Cycle Rocks!</h1>${names}`);
     });
   });
 });
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log('Running on port ' + port);
 });
