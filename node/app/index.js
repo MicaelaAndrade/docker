@@ -4,7 +4,7 @@ const app = express();
 const port = 3000;
 
 const connection = mysql.createConnection({
-  host: process.env.DATABASE_HOST,
+  host: 'db',
   user: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME
@@ -12,7 +12,7 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
-app.get('/', (req, res) => {
+app.get('/teste', (req, res) => {
   const sql = `INSERT INTO people(name) VALUES('John Doe')`;
   connection.query(sql, (err, result) => {
     if (err) throw err;
