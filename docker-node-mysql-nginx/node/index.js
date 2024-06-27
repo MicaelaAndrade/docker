@@ -1,44 +1,60 @@
 const express = require('express');
-const mysql = require('mysql2');
-
+const mysql = require('mysql');
 const app = express();
-const port = 3000;
 
-const connection = mysql.createConnection({
+const config = {
   host: 'db',
   user: 'root',
   password: 'root',
   database: 'test'
-});
+};
 
-connection.connect((err) => {
+const connection = mysql.createConnection(config);
+
+connection.connect(err => {
   if (err) {
-    console.error('Error connecting to MySQL:', err);
-    return;
+    console.error('Error connecting to database:', err);
+    process.exit(1);
   }
-  console.log('Connected to MySQL');
+
+  // Ensure table `people` exists
+  const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS people (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL
+    )
+  `;
+  
+  connection.query(createTableQuery, (err, results) => {
+    if (err) {
+      console.error('Error creating table:', err);
+      process.exit(1);
+    }
+    console.log('Connected to database and ensured table `people` exists');
+  });
 });
 
 app.get('/', (req, res) => {
-  const sqlInsert = `INSERT INTO people(name) VALUES('Full Cycle Rocks!')`;
-  connection.query(sqlInsert, (err) => {
+  connection.query("INSERT INTO people(name) values('Full Cycle Rocks!')", (err, results) => {
     if (err) {
-      console.error('Error inserting into table:', err);
-      res.send('Error inserting into table');
+      console.error('Error inserting data:', err);
+      res.status(500).send('Internal Server Error');
       return;
     }
-    connection.query(`SELECT name FROM people`, (err, results) => {
+
+    connection.query('SELECT name FROM people', (err, results) => {
       if (err) {
-        console.error('Error fetching from table:', err);
-        res.send('Error fetching from table');
+        console.error('Error retrieving data:', err);
+        res.status(500).send('Internal Server Error');
         return;
       }
-      const namesList = results.map(row => `<li>${row.name}</li>`).join('');
-      res.send(`<h1>Full Cycle Rocks!</h1><ul>${namesList}</ul>`);
+
+      const names = results.map(row => row.name).join('<br>');
+      res.send(`<h1>Full Cycle Rocks!</h1><br>${names}`);
     });
   });
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
 });
