@@ -1,7 +1,7 @@
 {
   "name": "node-app",
   "version": "1.0.0",
-  "description": "Node.js app for Docker challenge",
+  "description": "Node.js app with MySQL and Nginx",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
