@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: node
+    container_name: app
+    entrypoint: npm start
+    networks:
+      - node-network
+    volumes:
+      - ./node:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    build:
+      context: database
+    container_name: db
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - node-network
+    healthcheck:
+      test: mysqladmin ping -h localhost -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      interval: 5s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  nginx:
+    build:
+      context: nginx
+    image: thaismegumi/nginx
+    container_name: nginx
+    networks:
+      - node-network
+    ports:
+      - '8080:80'
+    depends_on:
+      - app
+
+networks:
+  node-network:
+    driver: bridge
+
+volumes:
+  mysql:
+    driver: local
